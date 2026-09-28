@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Autocorregible - Ácido Carmínico y Altitud</title>
+    <style>
+        :root {
+            --primary: #17324d;
+            --primary-hover: #274f70;
+            --bg: #f3f5f7;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-muted: #667085;
+            --correct: #10b981;
+            --correct-bg: #ecfdf5;
+            --incorrect: #ef4444;
+            --incorrect-bg: #fef2f2;
+            --warning-bg: #fffbeb;
+            --border: #e0e5ea;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-left: 6px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        header h2 {
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        .academic-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .academic-info div strong {
+            color: var(--primary);
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        .section-card h3 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 8px;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        input[type="number"], textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(23, 50, 77, 0.15);
+        }
+
+        .question-box {
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .options-list {
+            list-style: none;
+        }
+
+        .options-list li {
+            margin-bottom: 10px;
+        }
+
+        .options-list label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 14.5px;
+        }
+
+        .options-list input[type="radio"] {
+            margin-top: 3px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .feedback {
+            margin-top: 12px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: var(--correct-bg);
+            border: 1px solid var(--correct);
+            color: #065f46;
+        }
+
+        .feedback.incorrect {
+            background-color: var(--incorrect-bg);
+            border: 1px solid var(--incorrect);
+            color: #991b1b;
+        }
+
+        .feedback.analysis {
+            background-color: var(--warning-bg);
+            border: 1px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .actions {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
+        .score-board {
+            display: none;
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-board h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .score-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Examen de Evaluación: Contenido de Ácido Carmínico en <i>Dactylopius coccus</i> según la Altitud</h1>
+        <h2>Estudio comparativo en tres localidades de La Paz (Achumani, Huaricana y Río Abajo)</h2>
+        <div class="academic-info">
+            <div><strong>Materia:</strong> Laboratorio de Química Analítica III</div>
+            <div><strong>Tema:</strong> Espectrofotometría UV-Vis y Validación Analítica</div>
+            <div><strong>Unidad:</strong> Evaluación Cuantitativa y Estadística</div>
+        </div>
+    </header>
+
+    <div id="scoreBoard" class="score-board">
+        <h2>Resultados del Cuestionario</h2>
+        <p>Tu nota obtenida es:</p>
+        <div class="score-number" id="finalScore">0 / 100</div>
+        <p id="scorePercentage" style="margin-top: 5px; font-size: 16px;"></p>
+        <p style="font-size: 13px; margin-top: 10px; opacity: 0.9;">
+            Revisa abajo la retroalimentación de cada pregunta para ver tus aciertos y corregir tus errores.
+        </p>
+    </div>
+
+    <form id="quizForm">
+
+        <div class="section-card">
+            <h3>Sección 1: Procesamiento de Datos Experimentales y Calibración</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px;">
+                A partir de la curva de calibración (y = 0.0096x + 0.002), completa las celdas para las muestras analizadas por triplicado (Factor de dilución = 2, Volumen = 100 mL).
+            </p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Muestra</th>
+                            <th>Localidad</th>
+                            <th>Altitud (m s.n.m.)</th>
+                            <th>Abs Promedio</th>
+                            <th>Conc. Medida (mg/L)</th>
+                            <th>Factor Dilución</th>
+                            <th>Conc. Real (mg/L)</th>
+                            <th>% Ácido Carmínico (p/p)*</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>S1</td>
+                            <td>Río Abajo</td>
+                            <td>2400</td>
+                            <td>0.322</td>
+                            <td><input type="number" step="0.01" id="c_m1" placeholder="Ej: 33.33"></td>
+                            <td>2</td>
+                            <td><input type="number" step="0.01" id="c_r1" placeholder="Ej: 66.67"></td>
+                            <td><input type="number" step="0.01" id="p_1" placeholder="Ej: 13.33"></td>
+                        </tr>
+                        <tr>
+                            <td>S2</td>
+                            <td>Huaricana</td>
+                            <td>3100</td>
+                            <td>0.489</td>
+                            <td><input type="number" step="0.01" id="c_m2" placeholder="Ej: 50.73"></td>
+                            <td>2</td>
+                            <td><input type="number" step="0.01" id="c_r2" placeholder="Ej: 101.46"></td>
+                            <td><input type="number" step="0.01" id="p_2" placeholder="Ej: 20.29"></td>
+                        </tr>
+                        <tr>
+                            <td>S3</td>
+                            <td>Achumani</td>
+                            <td>3500</td>
+                            <td>0.665</td>
+                            <td><input type="number" step="0.01" id="c_m3" placeholder="Ej: 69.06"></td>
+                            <td>2</td>
+                            <td><input type="number" step="0.01" id="c_r3" placeholder="Ej: 138.12"></td>
+                            <td><input type="number" step="0.01" id="p_3" placeholder="Ej: 27.62"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted);">*Asumiendo una masa seca inicial de muestra de 0.05 g extraída en 100 mL.</p>
+            <div id="fb_tabla" class="feedback"></div>
+        </div>
+
+        <div class="section-card">
+            <h3>Sección 2: Fundamentos Analíticos y Validación (Opción Múltiple)</h3>
+
+            <div class="question-box">
+                <div class="question-title">1. ¿Cuál es la función principal de la curva de calibración y del Material de Referencia Certificado (MRC) en la cuantificación espectrofotométrica?</div>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1" value="A"> A) La curva establece la relación entre concentración y respuesta (absorbancia); el MRC evalúa la exactitud del método.</label></li>
+                    <li><label><input type="radio" name="q1" value="B"> B) La curva mide la precisión del equipo y el MRC sirve para determinar el límite de detección.</label></li>
+                    <li><label><input type="radio" name="q1" value="C"> C) Ambos sirven únicamente para corregir la deriva del cero espectrofotométrico.</label></li>
+                </ul>
+                <div id="fb_q1" class="feedback"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">2. ¿Cómo se define operativamente el Límite de Cuantificación (LC) en una validación espectrofotométrica?</div>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2" value="A"> A) Señal del blanco + 3 veces la desviación estándar del blanco.</label></li>
+                    <li><label><input type="radio" name="q2" value="B"> B) Concentración mínima que se puede cuantificar con precisión y exactitud aceptables (usualmente 10 SD / pendiente).</label></li>
+                    <li><label><input type="radio" name="q2" value="C"> C) El valor más alto del estándar concentrado en la curva de calibración.</label></li>
+                </ul>
+                <div id="fb_q2" class="feedback"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">3. ¿Qué prueba estadística es más apropiada para comparar el contenido de ácido carmínico en las TRES localidades (Achumani, Huaricana y Río Abajo)?</div>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3" value="A"> A) Prueba t de Student para muestras independientes.</label></li>
+                    <li><label><input type="radio" name="q3" value="B"> B) Análisis de Varianza (ANOVA de un factor).</label></li>
+                    <li><label><input type="radio" name="q3" value="C"> C) Prueba Q de Dixon para datos atípicos.</label></li>
+                </ul>
+                <div id="fb_q3" class="feedback"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">4. Si durante la calibración se obtiene un coeficiente de determinación R² = 0.985 en análisis cuantitativo instrumental estricto:</div>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4" value="A"> A) Es totalmente óptimo, no requiere investigación adicional.</label></li>
+                    <li><label><input type="radio" name="q4" value="B"> B) Generalmente se requiere R² ≥ 0.995; un valor de 0.985 sugiere posibles errores sistemáticos o no linealidad.</label></li>
+                    <li><label><input type="radio" name="q4" value="C"> C) Significa que el 98.5% de la muestra está compuesta por ácido carmínico.</label></li>
+                </ul>
+                <div id="fb_q4" class="feedback"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">5. ¿Cuál es el criterio para identificar un dato atípico mediante la Prueba Q de Dixon antes de realizar promedios?</div>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5" value="A"> A) Si Q_calculado > Q_tabulado para el nivel de confianza elegido, se rechaza el dato atípico.</label></li>
+                    <li><label><input type="radio" name="q5" value="B"> B) Si la desviación estándar es mayor que 1.0, el dato se elimina automáticamente.</label></li>
+                    <li><label><input type="radio" name="q5" value="C"> C) Todos los datos atípicos deben conservarse siempre para no alterar el promedio.</label></li>
+                </ul>
+                <div id="fb_q5" class="feedback"></div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3>Sección 3: Espectroscopía UV-Vis y Comportamiento Químico</h3>
+
+            <div class="question-box">
+                <div class="question-title">6. El ácido carmínico absorbe a 495 nm (región visible). ¿Por qué la molécula presenta una coloración ROJA?</div>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6" value="A"> A) Porque emite luz roja tras absorber luz azul-verde.</label></li>
+                    <li><label><input type="radio" name="q6" value="B"> B) Porque absorbe en la región verde-azulada (~495 nm) y refleja/transmite su color complementario, que es el rojo.</label></li>
+                    <li><label><input type="radio" name="q6" value="C"> C) Porque el grupo antraquinónico absorbe únicamente radiación infrarroja.</label></li>
+                </ul>
+                <div id="fb_q6" class="feedback"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">7. Análisis conceptual: ¿Cómo afecta la variación del pH a la estructura electrónica y al color del ácido carmínico?</div>
+                <textarea id="q7_text" placeholder="Escribe tu respuesta argumentando los cambios de desprotonación de hidroxilos fenólicos, desplazamiento del máximo de absorción y cambio de color..."></textarea>
+                <div id="fb_q7" class="feedback analysis"></div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h3>Sección 4: Análisis Ecológico y Evaluación del Valor Agregado</h3>
+
+            <div class="question-box">
+                <div class="question-title">8. Discusión Ambiental: ¿Qué factores ecológicos asociados a la ALTITUD (3500 m frente a 2400 m s.n.m.) explican una mayor acumulación de ácido carmínico en Achumani?</div>
+                <textarea id="q8_text" placeholder="Considera radiación UV, amplitud térmica, estrés hídrico y función protectora del ácido carmínico en el insecto..."></textarea>
+                <div id="fb_q8" class="feedback analysis"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">9. Evaluación Económica 1: Para generar 10,000 Bs de ingreso vendiendo Ácido Carmínico Purificado (8000 Bs/kg), ¿cuánta cochinilla seca se requiere si la materia proviene de Achumani (~27.6% p/p) vs Río Abajo (~13.3% p/p)?</div>
+                <textarea id="q9_text" placeholder="Muestra tus cálculos y concluye qué localidad presenta mayor potencial de procesamiento..."></textarea>
+                <div id="fb_q9" class="feedback analysis"></div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title">10. Evaluación Económica 2: Si Río Abajo exporta 2 toneladas de cochinilla seca al año (22% promedio de ácido carmínico) a 1000 Bs/kg sin procesar, ¿cuál es el valor económico perdido comparado con la venta del pigmento purificado a 8000 Bs/kg?</div>
+                <textarea id="q10_text" placeholder="Calcula los ingresos por materia prima vs pigmento purificado y analiza las ventajas/limitaciones de una planta local..."></textarea>
+                <div id="fb_q10" class="feedback analysis"></div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn-submit" onclick="evaluarExamen()">Calcular Nota y Autocorregir</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+function evaluarExamen() {
+    let score = 0;
+    let totalScore = 100;
+
+    const cm1 = parseFloat(document.getElementById('c_m1').value);
+    const cr1 = parseFloat(document.getElementById('c_r1').value);
+    const p1  = parseFloat(document.getElementById('p_1').value);
+
+    const cm2 = parseFloat(document.getElementById('c_m2').value);
+    const cr2 = parseFloat(document.getElementById('c_r2').value);
+    const p2  = parseFloat(document.getElementById('p_2').value);
+
+    const cm3 = parseFloat(document.getElementById('c_m3').value);
+    const cr3 = parseFloat(document.getElementById('c_r3').value);
+    const p3  = parseFloat(document.getElementById('p_3').value);
+
+    let tablaCorrecta = true;
+    let feedbackTabla = "<strong>Retroalimentación de Cálculos:</strong><br>";
+
+    if(cm1 >= 31.5 && cm1 <= 35.0 && cr1 >= 63.0 && cr1 <= 70.0 && p1 >= 12.0 && p1 <= 14.5) {
+        score += 10;
+        feedbackTabla += "• S1 (Río Abajo): ¡Cálculos correctos! (Conc ~ 66.67 mg/L, ~13.3% p/p)<br>";
+    } else {
+        tablaCorrecta = false;
+        feedbackTabla += "• S1 (Río Abajo): Incorrecto. Revisa: C_medida = (0.322 - 0.002)/0.0096 = 33.33 mg/L. Conc Real = 66.67 mg/L. %p/p = 13.33%.<br>";
+    }
+
+    if(cm2 >= 48.0 && cm2 <= 53.0 && cr2 >= 96.0 && cr2 <= 106.0 && p2 >= 19.0 && p2 <= 22.0) {
+        score += 10;
+        feedbackTabla += "• S2 (Huaricana): ¡Cálculos correctos! (Conc ~ 101.46 mg/L, ~20.3% p/p)<br>";
+    } else {
+        tablaCorrecta = false;
+        feedbackTabla += "• S2 (Huaricana): Incorrecto. Revisa: C_medida = (0.489 - 0.002)/0.0096 = 50.73 mg/L. Conc Real = 101.46 mg/L. %p/p = 20.29%.<br>";
+    }
+
+    if(cm3 >= 66.0 && cm3 <= 72.0 && cr3 >= 132.0 && cr3 <= 144.0 && p3 >= 26.0 && p3 <= 29.5) {
+        score += 10;
+        feedbackTabla += "• S3 (Achumani): ¡Cálculos correctos! (Conc ~ 138.12 mg/L, ~27.6% p/p)<br>";
+    } else {
+        tablaCorrecta = false;
+        feedbackTabla += "• S3 (Achumani): Incorrecto. Revisa: C_medida = (0.665 - 0.002)/0.0096 = 69.06 mg/L. Conc Real = 138.12 mg/L. %p/p = 27.62%.<br>";
+    }
+
+    const fbT = document.getElementById('fb_tabla');
+    fbT.style.display = 'block';
+    fbT.className = tablaCorrecta ? 'feedback correct' : 'feedback incorrect';
+    fbT.innerHTML = feedbackTabla;
+
+    score += checkMCQ('q1', 'A', 10, 'fb_q1', 
+        "¡Correcto! La curva relaciona absorbancia frente a concentración, mientras que el MRC garantiza la exactitud del ensayo.",
+        "Incorrecto. La curva relaciona Absorbancia vs Concentración, y el MRC se usa para verificar la exactitud.");
+
+    score += checkMCQ('q2', 'B', 10, 'fb_q2', 
+        "¡Correcto! El LC es la menor cantidad del analito que puede ser cuantitativamente determinada con precisión e incertidumbre aceptables.",
+        "Incorrecto. El LC se calcula estadísticamente como 10 SD / pendiente.");
+
+    score += checkMCQ('q3', 'B', 10, 'fb_q3', 
+        "¡Correcto! Al comparar más de dos grupos/localidades, se debe emplear ANOVA de un factor.",
+        "Incorrecto. La prueba t sólo compara 2 grupos. Al ser 3 localidades, se usa ANOVA.");
+
+    score += checkMCQ('q4', 'B', 10, 'fb_q4', 
+        "¡Correcto! En espectrofotometría cuantitativa se exige generalmente R² ≥ 0.995. Un valor menor indica falta de linealidad o errores analíticos.",
+        "Incorrecto. Un R² de 0.985 muestra una dispersión excesiva para cuantificación precisa.");
+
+    score += checkMCQ('q5', 'A', 10, 'fb_q5', 
+        "¡Correcto! La prueba Q de Dixon compara el valor Q_calc contra Q_tab; si es mayor, el dato atípico se rechaza.",
+        "Incorrecto. Se requiere que el cociente del rechazo sea mayor al valor tabulado en la prueba Q.");
+
+    score += checkMCQ('q6', 'B', 10, 'fb_q6', 
+        "¡Correcto! Un compuesto absorbe cierta longitud de onda (~495 nm es azul-verde) y percibimos el color complementario transmitido (Rojo).",
+        "Incorrecto. La absorción a 495 nm remueve fotones verdes/azules, dejando pasar el color rojo.");
+
+    evaluarAbierta('q7_text', 'fb_q7', 
+        "<strong>Criterios de Autocorrección (pH y Color):</strong><br>" +
+        "• <strong>A pH ácido (<3):</strong> Predomina la forma protonada (color naranja/amarillo).<br>" +
+        "• <strong>A pH neutro/alcalino (4-8):</strong> La deprotonación de los grupos -OH incrementa la deslocalización de electrones.<br>" +
+        "• <strong>Efecto:</strong> Se produce un desplazamiento batocrómico cambiando el color a rojo intenso o violeta.");
+
+    evaluarAbierta('q8_text', 'fb_q8', 
+        "<strong>Criterios de Autocorrección (Factores Ambientales):</strong><br>" +
+        "• <strong>Radiación UV más alta:</strong> A 3500 m (Achumani), la menor capa atmosférica incrementa la radiación UV. El ácido carmínico actúa como fotoprotector biológico.<br>" +
+        "• <strong>Estrés térmico e hídrico:</strong> La amplitud térmica estimula la biosíntesis de metabolitos secundarios protectores.");
+
+    evaluarAbierta('q9_text', 'fb_q9', 
+        "<strong>Criterios de Autocorrección (Cálculo Económico 1):</strong><br>" +
+        "• Para 10,000 Bs vendiendo pigmento a 8000 Bs/kg, se requieren 1.25 kg de Ácido Carmínico puro.<br>" +
+        "• En <strong>Achumani (27.6% rend.):</strong> Se necesitan 1.25 / 0.276 = 4.53 kg de cochinilla seca.<br>" +
+        "• En <strong>Río Abajo (13.3% rend.):</strong> Se necesitan 1.25 / 0.133 = 9.40 kg de cochinilla seca.");
+
+    evaluarAbierta('q10_text', 'fb_q10', 
+        "<strong>Criterios de Autocorrección (Cálculo Económico 2):</strong><br>" +
+        "• Venta como materia prima (2000 kg a 1000 Bs/kg) = <strong>2,000,000 Bs</strong>.<br>" +
+        "• Contenido de pigmento = 2000 kg x 0.22 = 440 kg de Ácido Carmínico.<br>" +
+        "• Valor del pigmento purificado (440 kg a 8000 Bs/kg) = <strong>3,520,000 Bs</strong>.<br>" +
+        "• <strong>Pérdida por no procesar:</strong> 3,520,000 - 2,000,000 = <strong>1,520,000 Bs</strong>.");
+
+    score += 10;
+
+    const scoreBoard = document.getElementById('scoreBoard');
+    scoreBoard.style.display = 'block';
+    document.getElementById('finalScore').innerText = score + " / " + totalScore;
+    document.getElementById('scorePercentage').innerText = "Porcentaje de aprovechamiento: " + ((score/totalScore)*100).toFixed(1) + "%";
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function checkMCQ(qName, correctAnswer, points, feedbackId, correctMsg, incorrectMsg) {
+    const selected = document.querySelector(`input[name="${qName}"]:checked`);
+    const fb = document.getElementById(feedbackId);
+    fb.style.display = 'block';
+
+    if (selected && selected.value === correctAnswer) {
+        fb.className = 'feedback correct';
+        fb.innerHTML = '<strong>¡Correcto! (+ ' + points + ' pts):</strong> ' + correctMsg;
+        return points;
+    } else {
+        fb.className = 'feedback incorrect';
+        let userVal = selected ? selected.value : "Sin responder";
+        fb.innerHTML = '<strong>Incorrecto (0 pts):</strong> Tu respuesta fue (' + userVal + '). ' + incorrectMsg;
+        return 0;
+    }
+}
+
+function evaluarAbierta(inputId, feedbackId, guideText) {
+    const input = document.getElementById(inputId).value.trim();
+    const fb = document.getElementById(feedbackId);
+    fb.style.display = 'block';
+
+    if (input.length < 20) {
+        fb.className = 'feedback incorrect';
+        fb.innerHTML = '<strong>Respuesta incompleta:</strong> Por favor desarrolla tu respuesta.<br>' + guideText;
+    } else {
+        fb.className = 'feedback analysis';
+        fb.innerHTML = '<strong>Respuesta registrada. Compara con la solución oficial:</strong><br>' + guideText;
+    }
+}
+</script>
+
+</body>
+</html>
